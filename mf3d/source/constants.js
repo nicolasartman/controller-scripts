@@ -26,14 +26,22 @@
 	};
 
 	global.constant.status = {
-		button: {
+		modeButton: {
+			on: 147,
+			off: 131
+		},
+		arcadeButton: {
 			on: 146,
 			off: 130
 		},
 		animation: {
 			on: 147,
 			off: 131
-		}
+		},
+		noteOnMin: 144,
+		noteOnMax: 159,
+		noteOffMin: 128,
+		noteOffMax: 143
 	};
 	
 	global.constant.note = {
@@ -46,7 +54,7 @@
 		// The base midi note number that the mf3d starts from
 		base: 36,
 		// The number of primary arcade buttons in the main grid
-		buttonGridCount: 16
+		arcadeButtonCount: 16
 	};
 	
 	// Just a list of all the modifiers
@@ -64,6 +72,7 @@
 	constant.modifierColors[global.constant.note.modifier.shift] = constant.color.lowYellow;
 		
 	global.constant.animation = {
+		none: 0,
 		// Gated (flashing) color rate
 		flash: {
 			fourBar: 34,

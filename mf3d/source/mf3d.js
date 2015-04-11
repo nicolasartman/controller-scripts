@@ -4,9 +4,11 @@ var state = {
 	modifiers: {}, // private internal state storage
 	enableModifier: function (modifier) {
 		state.modifiers[modifier] = true;
+		view.setArcadeButton(modifier, constant.modifierColors[modifier]);
 	},
 	disableModifier: function (modifier) {
-			state.modifiers[modifier] = false;
+		state.modifiers[modifier] = false;
+		view.clearArcadeButton(modifier);
 	},
 	modifierIsEnabled: function (modifier) {
 		return state.modifiers[modifier];
@@ -20,26 +22,19 @@ var console = {
 	}
 };
 
-// TODO: implement dirty tracking
 function flush() {
-	console.log('flushing');
-	_.each(constant.note.modifiers, function (modifier) {
-		if (state.modifiers[modifier]) {
-			host.getMidiOutPort(0).sendMidi(constant.status.button.on,
-					modifier, constant.modifierColors[modifier]);
-		} else {
-			host.getMidiOutPort(0).sendMidi(constant.status.button.off,
-				modifier, constant.color.none);			
-		}
-	});
+	view.render();
 };
 
 
 function handleModifier(status, note) {
-	if (_.contains(constant.note.modifiers, note)) {
-		if (status === constant.status.button.on) {
+	console.log('one');
+	if (utility.isModifier(note)) {
+		console.log('two');
+		if (utility.isNoteOn(status)) {
+			console.log('three');
 			state.enableModifier(note);
-		} else if (status === constant.status.button.off) {
+		} else if (utility.isNoteOff(status)) {
 			state.disableModifier(note);
 		}
 	}
@@ -54,17 +49,9 @@ function handleMidiInput(status, data1, data2) {
 	var color = constant.color.blue;
 	var animation = constant.animation.flash.eighth;
 
-	if (_.contains([constant.status.button.on, constant.status.button.off], status)) {
+	if (utility.isNoteOnOrOff(status)) {
 		handleModifier(status, data1);
 	}
-
-	// if (status === constant.status.button.on) {
-	// 	outPort.sendMidi(constant.status.animation.on, note, constant.animation.flash.halfNote);
-	// 	outPort.sendMidi(constant.status.button.on, note, constant.color.lowBlue);
-	// } else if (constant.status.button.off) {
-	// 	outPort.sendMidi(constant.status.animation.off, note, 0);
-	// 	outPort.sendMidi(constant.status.button.on, note, 0);
-	// }
 }
 
 function init() {

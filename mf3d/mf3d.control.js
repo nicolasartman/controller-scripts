@@ -13,4 +13,6 @@ load('source/lodash.js');
 
 // The core script and supporting libraries
 load('source/constants.js');
+load('source/utility.js');
+load('source/view.js');
 load('source/mf3d.js');
