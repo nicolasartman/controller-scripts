@@ -10,6 +10,7 @@ host.defineMidiPorts(1, 1);
 host.addDeviceNameBasedDiscoveryPair(["Midi Fighter 3D"], ["Midi Fighter 3D"]);
 
 load('source/lodash.js');
+load('source/json2.js');
 
 // The core script and supporting libraries
 load('source/constants.js');

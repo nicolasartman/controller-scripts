@@ -3,13 +3,7 @@
 	var modeButtonStateChanged = {};
 	var arcadeButtonStates = {};
 	var modeButtonStates = {};
-	
-	var convertToNote = function (coordinatePair) {
-		return constant.note.base +
-			coordinatePair[0] * 4 +
-			coordinatePair[1];
-	};
-	
+		
 	var resetChangeTracking = function () {
 		arcadeButtonStateChanged = {};
 		modeButtonStateChanged = {};
@@ -20,20 +14,20 @@
 	//
 	//     0 1 2 3
 	//
-	// 3   o o o o
-	// 2   o o o o
-	// 1   o o o o
 	// 0   o o o o
+	// 1   o o o o
+	// 2   o o o o
+	// 3   o o o o
 	//
-	// so the lower right button would have coordinates [3, 0]
+	// so the lower left button would have coordinates 0, 3, or {x:0, y:3}
 	global.view = {
 		setArcadeButton: function (buttonCoordinatePairOrNote, color, animation) {
 			var note = buttonCoordinatePairOrNote;
 
 			if (_.isArray(buttonCoordinatePairOrNote)) {
-				note = convertToNote(buttonCoordinatePairOrNote);
+				note = utility.getNoteForCoordinates(buttonCoordinatePairOrNote);
 			}
-			
+
 			// Verify the note is valid and bail if it's not
 			if (!(constant.note.base <= note &&
 				note <= constant.note.base + constant.note.arcadeButtonCount)) {

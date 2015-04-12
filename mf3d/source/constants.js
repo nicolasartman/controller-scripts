@@ -51,6 +51,8 @@
 			control: 38,
 			shift: 39
 		},
+		actionButtonMin: 40,
+		actionButtonMax: 51,
 		// The base midi note number that the mf3d starts from
 		base: 36,
 		// The number of primary arcade buttons in the main grid
