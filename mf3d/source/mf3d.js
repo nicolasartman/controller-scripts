@@ -18,7 +18,7 @@ var state = {
 var console = {
 	log: function () {
 		var args = _.toArray(arguments);
-		println(args.join(', '));
+		println(args.join(' '));
 	}
 };
 
@@ -71,19 +71,30 @@ function init() {
 	host.getMidiInPort(0).setMidiCallback(handleMidiInput);
 	global.transport = host.createTransport();
 	var trackBank = host.createMainTrackBank(4, 2, 3);
-
+	
 	global.clipLaunchers = _.map(_.range(0,4), function (trackNumber) {
 		return trackBank.getTrack(trackNumber).getClipLauncherSlots();
 	});
 
-	_.each(clipLaunchers, function (launcher) {
+	_.each(clipLaunchers, function (launcher, launcherNumber) {
 		launcher.setIndication(true);
+
+		launcher.addIsRecordingObserver(function (slotNumber, isRecording) {
+			console.log('recording in progress', isRecording);
+			view.setArcadeButton({x: launcherNumber, y: slotNumber},
+				isRecording ? constant.color.red : constant.color.none);
+		});
+		
+		launcher.addIsRecordingQueuedObserver(function (slotNumber, isQueued) {
+			console.log('recording queued', isQueued);
+			view.setArcadeButton({x: launcherNumber, y: slotNumber},
+				isQueued ? constant.color.red : constant.color.none,
+				isQueued ? constant.animation.pulse.eighthNote : constant.animation.none);
+		});
 	});
 
 	global.transport.addIsPlayingObserver(function (isPlaying) {
-		console.log('isPlaying', isPlaying);
-
-		// If going from stopped to playing, reset the midi on the midi fighter
+		// If going from stopped to playing, reset the midi clock
 		if (!global.state.transportIsPlaying && isPlaying) {
 			// TODO: something
 		}
@@ -93,6 +104,4 @@ function init() {
 	});
 }
 
-function exit() {
-	println('exiting...goodbye!');
-}
+function exit() {}

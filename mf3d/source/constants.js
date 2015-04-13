@@ -87,8 +87,15 @@
 			thirdySecondNote: 41
 		},		
 		pulse: {
-		
-		},
+			eightBar: 42,
+			fourBar: 43,
+			twoBar: 44,
+			wholeNote: 45,
+			halfNote: 46,
+			quarterNote: 47,
+			eighthNote: 48,
+			sixteenthNote: 49
+		}
 	};
 	
 	// 16 brightness levels for the color of the button

@@ -24,7 +24,7 @@
 		setArcadeButton: function (buttonCoordinatePairOrNote, color, animation) {
 			var note = buttonCoordinatePairOrNote;
 
-			if (_.isArray(buttonCoordinatePairOrNote)) {
+			if (_.isObject(buttonCoordinatePairOrNote)) {
 				note = utility.getNoteForCoordinates(buttonCoordinatePairOrNote);
 			}
 
@@ -32,7 +32,7 @@
 			if (!(constant.note.base <= note &&
 				note <= constant.note.base + constant.note.arcadeButtonCount)) {
 				
-				console.log("ERROR: invalid note sent to view", note);
+				console.log("ERROR: invalid note sent to view", JSON.stringify(note));
 				return;
 			}
 
@@ -40,12 +40,17 @@
 				status: color === constant.color.none ?
 						constant.status.arcadeButton.off : constant.status.arcadeButton.on,
 				note: note,
-				color: color,
-				animation: animation,
-				animationStatus: animation === constant.animation.none ?
-						constant.status.animation.off : constant.status.animation.on
+				color: color
 			};
+			if (animation || animation === constant.animation.none) {
+				newState.animation = animation;
+				newState.animationStatus = animation === constant.animation.none ?
+						constant.status.animation.off : constant.status.animation.on
+			}
 			if (!_.isEqual(arcadeButtonStates[note], newState)) {
+				// Merge the new state into the existing state,
+				// in case multiple state changes occur before a render.
+				newState = _.extend({}, arcadeButtonStates[note], newState);
 				arcadeButtonStateChanged[note] = true;
 			}
 			arcadeButtonStates[note] = newState;
@@ -82,14 +87,14 @@
 		},
 		// Update the controller for all buttons that have changed state
 		render: function () {
-			console.log('render called');
+			console.log('=== render called');
 			// Update the arcade buttons
 			_.each(arcadeButtonStates, function (state) {
 				if (arcadeButtonStateChanged[state.note]) {
-					console.log('sending updated state for', state.note);
+					console.log('sending updated state: ', JSON.stringify(state));
 					this.host.getMidiOutPort(0).sendMidi(state.status,
 						state.note, state.color);
-					if (state.animation) {
+					if (_.has(state, 'animation')) {
 						this.host.getMidiOutPort(0).sendMidi(state.animationStatus,
 							state.note, state.animation);
 					}
@@ -97,11 +102,12 @@
 			});
 			// Update the mode buttons
 			_.each(modeButtonStates, function (state) {
-					console.log('sending updated state for', state.note);
+					console.log('sending updated modifier state for', state.note);
 					this.host.getMidiOutPort(0).sendMidi(state.status,
 						state.note);				
 			});
 			resetChangeTracking();
+			console.log('=== render complete');
 		}
 	}
 }(this));

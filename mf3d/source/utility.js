@@ -33,7 +33,7 @@
 				// X offset
 				coordinates.x +
 				// Y offset
-				constant.note.base + 4 * (3 - coordinates.y)
+				4 * (3 - coordinates.y)
 		}
 	};
 }(this));
